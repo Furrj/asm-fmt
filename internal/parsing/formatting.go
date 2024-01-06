@@ -14,13 +14,13 @@ func PrettyPrint(lines []string) {
 }
 
 func StripEmptyLines(lines []string) []string {
-	currLine := len(lines) - 1
+	currIndex := len(lines) - 1
 	scanning := true
 
 	for scanning {
-		if lines[currLine] == "" {
-			lines = lines[:currLine]
-			currLine--
+		if lines[currIndex] == "" && currIndex != 0 {
+			lines = lines[:currIndex]
+			currIndex--
 		} else {
 			scanning = false
 		}

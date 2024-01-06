@@ -15,39 +15,40 @@ func GetAllFileContents(filename string) ([]string, error) {
 	return strings.Split(string(contents[:]), "\n"), nil
 }
 
-func GetSection(lines []string, until string, startIndex int) types.SectionInfo {
+func GetSection(lines []string, until string, startIndex int) (types.SectionInfo, int) {
 	sectionInfo := types.SectionInfo{
 		StartLine: startIndex + 1,
 	}
 	var content []string
+	var index int
 
-	for i := startIndex; i < len(lines); i++ {
-		if strings.Contains(strings.ToLower(lines[i]), fmt.Sprintf("section %s", until)) {
+	for index = startIndex; index < len(lines); index++ {
+		if strings.Contains(strings.ToLower(lines[index]), fmt.Sprintf("section %s", until)) {
 			break
 		}
-		content = append(content, lines[i])
+		content = append(content, lines[index])
 	}
 
 	sectionInfo.Content = StripEmptyLines(content)
 	sectionInfo.LineCount = len(sectionInfo.Content)
 
-	return sectionInfo
+	return sectionInfo, index
 }
 
-//func GetPreamble(lines []string) types.SectionInfo {
-//	var preamble types.SectionInfo
-//	var content []string
-//
-//scan:
-//	for _, v := range lines {
-//		if strings.Contains(strings.ToLower(v), "section .data") {
-//			break scan
-//		}
-//		content = append(content, v)
-//	}
-//
-//	preamble.StartLine = 1
-//	preamble.Content = StripEmptyLines(content)
-//	preamble.LineCount = len(preamble.Content)
-//	return preamble
-//}
+func GetSections(lines []string) types.Sections {
+	var allSections types.Sections
+	sectionLabels := []string{".data", ".bss", ".text", "EOF"}
+	sections := []*types.SectionInfo{
+		&allSections.Preamble,
+		&allSections.Data,
+		&allSections.Bss,
+		&allSections.Text,
+	}
+	currIndex := 0
+
+	for i := range sectionLabels {
+		*(sections[i]), currIndex = GetSection(lines, sectionLabels[i], currIndex)
+	}
+
+	return allSections
+}
