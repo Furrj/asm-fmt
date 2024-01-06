@@ -19,18 +19,17 @@ func main() {
 		os.Exit(1)
 	}
 	preamble := getPreamble(lines)
-	fmt.Println(preamble.LineCount)
 	prettyPrint(preamble.Content)
 }
 
-type section struct {
+type sectionInfo struct {
 	LineCount int
 	StartLine int
 	Content   []string
 }
 
 type sections struct {
-	Preamble section
+	Preamble sectionInfo
 	Data     []string
 	Bss      []string
 	Text     []string
@@ -52,29 +51,35 @@ func prettyPrint(lines []string) {
 	}
 }
 
-func getPreamble(lines []string) section {
-	var preamble section
+func getPreamble(lines []string) sectionInfo {
+	var preamble sectionInfo
 	var content []string
 
 scan:
-	for i, v := range lines {
+	for _, v := range lines {
 		if strings.Contains(strings.ToLower(v), "section .data") {
-			preamble.LineCount = i
 			break scan
 		}
 		content = append(content, v)
 	}
 
 	preamble.StartLine = 1
-	preamble.Content = content
+	preamble.Content = stripEmptyLines(content)
+	preamble.LineCount = len(preamble.Content)
 	return preamble
 }
 
 func stripEmptyLines(lines []string) []string {
-	length := len(lines)
+	currLine := len(lines) - 1
+	scanning := true
 
-	if lines[length-1] == "" {
-		lines = lines[:length]
+	for scanning {
+		if lines[currLine] == "" {
+			lines = lines[:currLine]
+			currLine--
+		} else {
+			scanning = false
+		}
 	}
 
 	return lines

@@ -5,7 +5,7 @@ BUILD := $(GO) build
 # Application details
 APP_NAME := asm-fmt
 OUTPUT_DIR := build
-SRC_DIR := .
+SRC_FILE := cmd/main.go
 
 # Cross-compilation variables
 ARCH := $(shell go env GOARCH)
@@ -14,7 +14,7 @@ OS := $(shell go env GOOS)
 # Main build target
 build: clean
 	@echo "Building for $(OS) $(ARCH)"
-	@$(BUILD) -o $(OUTPUT_DIR)/$(APP_NAME) $(SRC_DIR)
+	@$(BUILD) -o $(OUTPUT_DIR)/$(APP_NAME) $(SRC_FILE)
 
 # Clean target
 clean:
@@ -22,4 +22,4 @@ clean:
 	# @rm -rf $(OUTPUT_DIR)
 
 # Other targets
-.PHONY: all clean
+.PHONY: clean
