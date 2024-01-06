@@ -21,16 +21,23 @@ func GetSection(lines []string, until string, startIndex int) (types.SectionInfo
 	}
 	var content []string
 	var index int
+	until = fmt.Sprintf("section %s", until)
 
-	for index = startIndex; index < len(lines); index++ {
-		if strings.Contains(strings.ToLower(lines[index]), fmt.Sprintf("section %s", until)) {
-			break
+	if strings.ToLower(lines[startIndex]) == strings.ToLower(until) {
+		sectionInfo.Content = nil
+		sectionInfo.LineCount = 0
+		index = startIndex
+	} else {
+		for index = startIndex; index < len(lines); index++ {
+			if strings.Contains(strings.ToLower(lines[index]), until) {
+				break
+			}
+			content = append(content, lines[index])
 		}
-		content = append(content, lines[index])
-	}
 
-	sectionInfo.Content = StripEmptyLines(content)
-	sectionInfo.LineCount = len(sectionInfo.Content)
+		sectionInfo.Content = StripEmptyLines(content)
+		sectionInfo.LineCount = len(sectionInfo.Content)
+	}
 
 	return sectionInfo, index
 }
