@@ -1,12 +1,13 @@
 package parsing
 
 import (
+	"fmt"
 	"github.com/Furrj/asm-fmt/internal/types"
 	"os"
 	"strings"
 )
 
-func GetContents(filename string) ([]string, error) {
+func GetAllFileContents(filename string) ([]string, error) {
 	contents, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -14,36 +15,39 @@ func GetContents(filename string) ([]string, error) {
 	return strings.Split(string(contents[:]), "\n"), nil
 }
 
-func GetPreamble(lines []string) types.SectionInfo {
-	var preamble types.SectionInfo
+func GetSection(lines []string, until string, startIndex int) types.SectionInfo {
+	sectionInfo := types.SectionInfo{
+		StartLine: startIndex + 1,
+	}
 	var content []string
 
-scan:
-	for _, v := range lines {
-		if strings.Contains(strings.ToLower(v), "section .data") {
-			break scan
+	for i := startIndex; i < len(lines); i++ {
+		if strings.Contains(strings.ToLower(lines[i]), fmt.Sprintf("section %s", until)) {
+			break
 		}
-		content = append(content, v)
+		content = append(content, lines[i])
 	}
 
-	preamble.StartLine = 1
-	preamble.Content = StripEmptyLines(content)
-	preamble.LineCount = len(preamble.Content)
-	return preamble
+	sectionInfo.Content = StripEmptyLines(content)
+	sectionInfo.LineCount = len(sectionInfo.Content)
+
+	return sectionInfo
 }
 
-func StripEmptyLines(lines []string) []string {
-	currLine := len(lines) - 1
-	scanning := true
-
-	for scanning {
-		if lines[currLine] == "" {
-			lines = lines[:currLine]
-			currLine--
-		} else {
-			scanning = false
-		}
-	}
-
-	return lines
-}
+//func GetPreamble(lines []string) types.SectionInfo {
+//	var preamble types.SectionInfo
+//	var content []string
+//
+//scan:
+//	for _, v := range lines {
+//		if strings.Contains(strings.ToLower(v), "section .data") {
+//			break scan
+//		}
+//		content = append(content, v)
+//	}
+//
+//	preamble.StartLine = 1
+//	preamble.Content = StripEmptyLines(content)
+//	preamble.LineCount = len(preamble.Content)
+//	return preamble
+//}

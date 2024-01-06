@@ -12,3 +12,19 @@ func PrettyPrint(lines []string) {
 		fmt.Println("---------------------")
 	}
 }
+
+func StripEmptyLines(lines []string) []string {
+	currLine := len(lines) - 1
+	scanning := true
+
+	for scanning {
+		if lines[currLine] == "" {
+			lines = lines[:currLine]
+			currLine--
+		} else {
+			scanning = false
+		}
+	}
+
+	return lines
+}

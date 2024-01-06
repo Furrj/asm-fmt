@@ -8,7 +8,7 @@ type SectionInfo struct {
 
 type Sections struct {
 	Preamble SectionInfo
-	Data     []string
-	Bss      []string
-	Text     []string
+	Data     SectionInfo
+	Bss      SectionInfo
+	Text     SectionInfo
 }

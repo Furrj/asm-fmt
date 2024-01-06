@@ -13,11 +13,12 @@ func main() {
 	}
 	filename := os.Args[1]
 
-	lines, err := parsing.GetContents(filename)
+	lines, err := parsing.GetAllFileContents(filename)
 	if err != nil {
 		fmt.Printf("Error opening file %s: %+v\n", filename, err)
 		os.Exit(1)
 	}
-	preamble := parsing.GetPreamble(lines)
+
+	preamble := parsing.GetSection(lines, ".data", 0)
 	parsing.PrettyPrint(preamble.Content)
 }
